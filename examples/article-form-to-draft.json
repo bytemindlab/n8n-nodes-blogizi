@@ -1,0 +1,146 @@
+{
+  "name": "Blogizi — Article form to draft",
+  "nodes": [
+    {
+      "id": "5e7fd0cd-2a7d-42d1-99b4-0ca9d2067f3c",
+      "name": "Submit an article",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "formTitle": "Send an article to Blogizi",
+        "formDescription": "Submit your Markdown article to create a draft for review.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Project slug",
+              "fieldType": "text",
+              "placeholder": "my-blog",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Title",
+              "fieldType": "text",
+              "placeholder": "How to automate your blog with n8n",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Slug",
+              "fieldType": "text",
+              "placeholder": "Optional: generated from the title"
+            },
+            {
+              "fieldLabel": "Meta description",
+              "fieldType": "textarea",
+              "placeholder": "A short summary for search engines"
+            },
+            {
+              "fieldLabel": "SEO keyword",
+              "fieldType": "text",
+              "placeholder": "n8n blog automation"
+            },
+            {
+              "fieldLabel": "Article Markdown",
+              "fieldType": "textarea",
+              "placeholder": "## Introduction\n\nPaste your article body here. Omit frontmatter and the H1 title.",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "buttonLabel": "Create draft"
+        }
+      },
+      "webhookId": "62a33e02-0d51-452f-ba3a-d40f0eb04a35"
+    },
+    {
+      "id": "52b9929f-45ff-4255-963d-68412670c36a",
+      "name": "Prepare article",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const input = $json;\nconst projectSlug = String(input['Project slug'] ?? '').trim();\nif (!projectSlug) throw new Error('Enter your Blogizi project slug.');\nconst title = String(input.Title ?? '').trim();\nconst content = String(input['Article Markdown'] ?? '').trim();\nconst description = String(input['Meta description'] ?? '').trim();\nconst keyword = String(input['SEO keyword'] ?? '').trim();\nconst customSlug = String(input.Slug ?? '').trim();\nif (!title) throw new Error('Enter an article title.');\nif (!content) throw new Error('Enter the article body as Markdown.');\nconst slug = customSlug || title\n  .normalize('NFKD')\n  .replace(/[\\u0300-\\u036f]/g, '')\n  .toLowerCase()\n  .replace(/[^a-z0-9]+/g, '-')\n  .replace(/^-+|-+$/g, '');\nif (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {\n  throw new Error('Enter a Slug using lowercase letters, numbers, and hyphens, e.g. my-first-post.');\n}\nreturn { json: { projectSlug, title, slug, description, keyword, content } };"
+      }
+    },
+    {
+      "id": "0e4c4849-17cf-493f-94c6-6744ea8d47a4",
+      "name": "Create Blogizi draft",
+      "type": "n8n-nodes-blogizi.blogizi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "parameters": {
+        "resource": "post",
+        "operation": "create",
+        "projectSlug": {
+          "__rl": true,
+          "mode": "slug",
+          "value": "={{ $json.projectSlug }}"
+        },
+        "title": "={{ $json.title }}",
+        "slug": "={{ $json.slug }}",
+        "status": "draft",
+        "additionalFields": {
+          "description": "={{ $json.description }}",
+          "keyword": "={{ $json.keyword }}",
+          "content": "={{ $json.content }}"
+        }
+      }
+    },
+    {
+      "id": "e59d8f9b-9404-49aa-83f4-61aba106d02b",
+      "name": "Setup and usage",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        -360
+      ],
+      "parameters": {
+        "width": 860,
+        "height": 260,
+        "content": "## Article form → Blogizi draft\n1. Install `n8n-nodes-blogizi` (built for 0.1.1).\n2. Open **Create Blogizi draft**, select your **Blogizi API** credential. The **Project** field is mapped from the form.\n3. Click **Execute Workflow**, open the form Test URL, and submit an article with your **Project slug**.\n4. Review the new draft in Blogizi.\n\nThe slug is generated from the title unless supplied. Reusing a slug makes Create fail; use a new slug for another article. For deliberate edits, use Update.\nThe workflow waits for Blogizi before confirming the form submission."
+      }
+    }
+  ],
+  "connections": {
+    "Submit an article": {
+      "main": [
+        [
+          {
+            "node": "Prepare article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare article": {
+      "main": [
+        [
+          {
+            "node": "Create Blogizi draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
