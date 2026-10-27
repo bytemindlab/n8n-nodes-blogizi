@@ -1,10 +1,12 @@
 {
   "name": "n8n-nodes-blogizi",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "n8n community node for the Blogizi public API",
   "license": "MIT",
   "homepage": "https://blogizi.com",
-  "keywords": ["n8n-community-node-package"],
+  "keywords": [
+    "n8n-community-node-package"
+  ],
   "author": {
     "name": "Rudolfs Rijkuris",
     "email": "rudolfs.rijkuris@gmail.com"
@@ -22,12 +24,18 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "strict": true,
-    "credentials": ["dist/credentials/BlogiziApi.credentials.js"],
-    "nodes": ["dist/nodes/Blogizi/Blogizi.node.js"]
+    "credentials": [
+      "dist/credentials/BlogiziApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Blogizi/Blogizi.node.js"
+    ]
   },
   "devDependencies": {
     "@n8n/node-cli": "*",
@@ -36,5 +44,7 @@
     "release-it": "^21.1.0",
     "typescript": "5.9.2"
   },
-  "peerDependencies": { "n8n-workflow": "*" }
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
 }
