@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rudolfsrijkuris/blogizi-n8n-node.git"
+    "url": "git+https://github.com/bytemindlab/n8n-nodes-blogizi.git"
   },
   "scripts": {
     "build": "n8n-node build",
