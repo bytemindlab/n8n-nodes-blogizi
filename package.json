@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-blogizi",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "n8n community node for the Blogizi public API",
   "license": "MIT",
   "homepage": "https://blogizi.com",
